@@ -30,6 +30,9 @@ export interface AnytimeOptions {
      */
     maxYear?: number;
 
+    minDate?: Date;
+    maxDate?: Date;
+
     /**
      * By default anytime will show every minute.
      * Set this to 5 or 15 etc to show fewer options at greater intervals.

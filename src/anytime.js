@@ -33,6 +33,14 @@ var Emitter = require('events').EventEmitter
 function AnytimePicker(options) {
   this.options = extend({}, defaults, options)
 
+  if(this.options.minDate) {
+    this.options.minDate.setHours(0,0,0,0);
+  }
+
+  if(this.options.maxDate) {
+    this.options.maxDate.setHours(23,59,59,999);
+  }
+
   Emitter.call(this)
 
   // A place to store references to event callback functions so they can be specifically unbound later on
@@ -57,6 +65,21 @@ function AnytimePicker(options) {
   this.el.addEventListener('click', function (e) {
     if (e.target.classList.contains('js-anytime-picker-day')) {
       e.stopPropagation()
+
+      var selectedDate = new Date(
+        parseInt(e.target.getAttribute('data-year')), 
+        parseInt(e.target.getAttribute('data-month')), 
+        parseInt(e.target.getAttribute('data-date'))
+      );
+
+      if(this.options.minDate && selectedDate < this.options.minDate) {
+        return;
+      }
+
+      if(this.options.maxDate && selectedDate > this.options.maxDate) {
+        return;
+      }
+
       this.update(function (value) {
         return value
           .date(parseInt(e.target.getAttribute('data-date'), 10))
@@ -288,6 +311,13 @@ AnytimePicker.prototype.updateDisplay = function () {
 
       if (y === currentDayOfMonth && isCurrentMonth && isCurrentYear) {
         date.classList.add('anytime-picker__date--current')
+      }
+
+      var actualDate = new Date(this.currentView.year, this.currentView.month, y);
+
+      if( (this.options.minDate && actualDate < this.options.minDate) || (this.options.maxDate && actualDate > this.options.maxDate)) {
+        date.setAttribute('disabled', true)
+        date.classList.add('disabled')
       }
 
       // Needs to add or remove because the current selected day can change

@@ -156,7 +156,6 @@ describe('anytime', function () {
       p.render()
 
       var day = p.el.querySelector('button[data-date=\'' + currentDay + '\']')
-
       assert(day.getAttribute('class').indexOf('anytime-picker__date--current') > -1, 'Should have a class on it')
     })
 
@@ -267,6 +266,112 @@ describe('anytime', function () {
       assert.equal(clearButton.textContent, 'Goodbye', 'should set clear button text')
     })
 
+  })
+
+  describe('min date bounds', function() {
+
+    var minDate = moment().startOf('day');
+    var previousDay = moment(minDate).add(-1, 'days');
+    var nextDay = moment(minDate).add(1, 'd');
+
+     it('should not disable date on min date', function() {
+
+      var date = moment();
+
+      var Picker = require('../src/anytime')
+        , parent = document.createElement('input')
+        , p = new Picker({ input: parent, minDate: minDate.toDate(), initialValue: minDate.toDate() })
+        , testDay = +date.format('D')
+
+      p.render()
+
+      var day = p.el.querySelector('button[data-date=\'' + testDay + '\']')
+      assert(day.getAttribute('class').indexOf('disabled') === -1, 'Should not have a class on it')
+
+    })
+
+    it('should disable date below min date', function() {
+
+      var Picker = require('../src/anytime')
+        , parent = document.createElement('input')
+        , p = new Picker({ input: parent, minDate: minDate.toDate(), initialValue: previousDay.toDate() })
+        , testDay = +previousDay.format('D')
+
+      p.render()
+
+      var day = p.el.querySelector('button[data-date=\'' + testDay + '\']')
+
+      assert(day.getAttribute('class').indexOf('disabled') > -1, 'Should have a class on it')
+
+    })
+
+    it('should not disable date above min date', function() {
+
+      var Picker = require('../src/anytime')
+        , parent = document.createElement('input')
+        , p = new Picker({ input: parent, minDate: minDate.toDate(), initialValue: nextDay.toDate() })
+        , testDay = +nextDay.format('D')
+      p.render()
+
+      var day = p.el.querySelector('button[data-date=\'' + testDay + '\']')
+
+      assert(day.getAttribute('class').indexOf('disabled') === -1, 'Should not have a class on it')
+
+    })
+   
+  })
+
+  describe('max date bounds', function() {
+
+    var maxDate = moment().startOf('day');
+    var previousDay = moment(maxDate).add(-1, 'days');
+    var nextDay = moment(maxDate).add(1, 'd');
+
+     it('should not disable date on max date', function() {
+
+      var date = moment();
+
+      var Picker = require('../src/anytime')
+        , parent = document.createElement('input')
+        , p = new Picker({ input: parent, maxDate: maxDate.toDate(), initialValue: maxDate.toDate() })
+        , testDay = +date.format('D')
+
+      p.render()
+
+      var day = p.el.querySelector('button[data-date=\'' + testDay + '\']')
+      assert(day.getAttribute('class').indexOf('disabled') === -1, 'Should not have a class on it')
+
+    })
+
+    it('should not disable date below min date', function() {
+
+      var Picker = require('../src/anytime')
+        , parent = document.createElement('input')
+        , p = new Picker({ input: parent, maxDate: maxDate.toDate(), initialValue: previousDay.toDate() })
+        , testDay = +previousDay.format('D')
+
+      p.render()
+
+      var day = p.el.querySelector('button[data-date=\'' + testDay + '\']')
+
+      assert(day.getAttribute('class').indexOf('disabled') === -1, 'Should have a class on it')
+
+    })
+
+    it('should disable date above min date', function() {
+
+      var Picker = require('../src/anytime')
+        , parent = document.createElement('input')
+        , p = new Picker({ input: parent, maxDate: maxDate.toDate(), initialValue: nextDay.toDate() })
+        , testDay = +nextDay.format('D')
+      p.render()
+
+      var day = p.el.querySelector('button[data-date=\'' + testDay + '\']')
+
+      assert(day.getAttribute('class').indexOf('disabled') > -1, 'Should not have a class on it')
+
+    })
+   
   })
 
 })
